@@ -51,7 +51,7 @@ class Loggers():
             'metrics/mAP_0.5',
             'metrics/mAP_0.5:0.95',  # metrics
             "r2",
-            "mse"
+            "mse",
             'val/box_loss',
             'val/obj_loss',
             'val/cls_loss',  # val loss
