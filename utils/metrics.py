@@ -14,8 +14,8 @@ import torch
 
 def fitness(x):
     # Model fitness as a weighted combination of metrics
-    w = [0.0, 0.0, 0.1, 0.9]  # weights for [P, R, mAP@0.5, mAP@0.5:0.95]
-    return (x[:, :4] * w).sum(1)
+    w = [0.0, 0.0, 0.1, 0.9, 0.5, 0.1, 0.1, 0.3]  # weights for [P, R, mAP@0.5, mAP@0.5:0.95, r2, mse, mae, mape]
+    return (x[:, :8] * w).sum(1)
 
 
 def smooth(y, f=0.05):
