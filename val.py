@@ -271,12 +271,14 @@ def run(
         mp, mr, map50, map = p.mean(), r.mean(), ap50.mean(), ap.mean()
         from sklearn.metrics import r2_score, mean_squared_error
         n_boxes_regression = np.array(n_boxes_regression)
-        r2 = r2_score(n_boxes_regression[:, 0], n_boxes_regression[:, 1])
-        mse = mean_squared_error(n_boxes_regression[:, 0], n_boxes_regression[:, 1])
+        print(n_boxes_regression.shape)
+        r2 = r2_score(n_boxes_regression[0, :], n_boxes_regression[1, :])
+        mse = mean_squared_error(n_boxes_regression[0, :], n_boxes_regression[1, :])
         nt = np.bincount(stats[3].astype(int), minlength=nc)  # number of targets per class
     else:
         nt = torch.zeros(1)
 
+    LOGGER.info(s)
     # Print results
     pf = '%20s' + '%11i' * 2 + '%11.3g' * 6  # print format
     LOGGER.info(pf % ('all', seen, nt.sum(), mp, mr, map50, map, r2, mse))# Print results
