@@ -184,7 +184,8 @@ def run(
     confusion_matrix = ConfusionMatrix(nc=nc)
     names = {k: v for k, v in enumerate(model.names if hasattr(model, 'names') else model.module.names)}
     class_map = coco80_to_coco91_class() if is_coco else list(range(1000))
-    s = ('%20s' + '%11s' * 8) % ('Class', 'Images', 'Labels', 'P', 'R', 'mAP@.5', 'mAP@.5:.95', 'r2', 'MSE')
+    s = ('%20s' + '%11s' * 10) % ('Class', 'Images', 'Labels', 'P', 'R', 'mAP@.5', 'mAP@.5:.95',
+                                 'r2', 'MSE', 'MAE', 'MAPE')
     dt, p, r, f1, mp, mr, map50, map, r2, mse = [0.0, 0.0, 0.0], 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0
     loss = torch.zeros(3, device=device)
     jdict, stats, ap, ap_class = [], [], [], []
@@ -226,12 +227,7 @@ def run(
             correct = torch.zeros(npr, niou, dtype=torch.bool, device=device)  # init
             seen += 1
 
-            n_boxes_regression.append((nl,  pred[pred[:, 4] > 0.25].shape[0]))
-            print(pred[pred[:, 4] > 0.25].shape[0])
-            print(pred[pred[:, 4] > 0.1].shape[0])
-            print(pred[pred[:, 4] > 0.02].shape[0])
-            print(pred[pred[:, 4] > 0.002].shape[0])
-
+            n_boxes_regression.append((nl,  pred[pred[:, 4] > 0.2].shape[0]))
             if npr == 0:
                 if nl:
                     stats.append((correct, *torch.zeros((3, 0), device=device)))
@@ -273,18 +269,21 @@ def run(
         tp, fp, p, r, f1, ap, ap_class = ap_per_class(*stats, plot=plots, save_dir=save_dir, names=names)
         ap50, ap = ap[:, 0], ap.mean(1)  # AP@0.5, AP@0.5:0.95
         mp, mr, map50, map = p.mean(), r.mean(), ap50.mean(), ap.mean()
-        from sklearn.metrics import r2_score, mean_squared_error
+        from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_percentage_error, mean_absolute_error
         n_boxes_regression = np.array(n_boxes_regression)
         r2 = r2_score(n_boxes_regression[:, 0], n_boxes_regression[:, 1])
         mse = mean_squared_error(n_boxes_regression[:, 0], n_boxes_regression[:, 1])
+        mae = mean_absolute_error(n_boxes_regression[:, 0], n_boxes_regression[:, 1])
+        mape = mean_absolute_percentage_error(n_boxes_regression[:, 0], n_boxes_regression[:, 1])
+
         nt = np.bincount(stats[3].astype(int), minlength=nc)  # number of targets per class
     else:
         nt = torch.zeros(1)
 
     LOGGER.info(s)
     # Print results
-    pf = '%20s' + '%11i' * 2 + '%11.3g' * 6  # print format
-    LOGGER.info(pf % ('all', seen, nt.sum(), mp, mr, map50, map, r2, mse))# Print results
+    pf = '%20s' + '%11i' * 2 + '%11.3g' * 8  # print format
+    LOGGER.info(pf % ('all', seen, nt.sum(), mp, mr, map50, map, r2, mse, mae, mape))# Print results
 
     # Print results per class
     if (verbose or (nc < 50 and not training)) and nc > 1 and len(stats):
@@ -338,7 +337,7 @@ def run(
     maps = np.zeros(nc) + map
     for i, c in enumerate(ap_class):
         maps[c] = ap[i]
-    return (mp, mr, map50, map, r2, mse, *(loss.cpu() / len(dataloader)).tolist()), maps, t
+    return (mp, mr, map50, map, r2, mse, mae, mape, *(loss.cpu() / len(dataloader)).tolist()), maps, t
 
 
 def parse_opt():
