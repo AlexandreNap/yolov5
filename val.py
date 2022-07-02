@@ -225,8 +225,11 @@ def run(
             path, shape = Path(paths[si]), shapes[si][0]
             correct = torch.zeros(npr, niou, dtype=torch.bool, device=device)  # init
             seen += 1
-            pred_over_threshold = pred[pred[:, 5] > 0.3]
-            print(pred_over_threshold)
+            pred_over_threshold = pred[pred[:, 5] > 0.02]
+            print(pred[pred[:, 5] > 0.3])
+            print(pred[pred[:, 5] > 0.1])
+            print(pred[pred[:, 5] > 0.03])
+            print(pred[pred[:, 5] > 0.01])
             n_boxes_regression.append((nl, pred_over_threshold.shape[0]))
             if npr == 0:
                 if nl:
