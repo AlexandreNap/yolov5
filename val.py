@@ -225,11 +225,8 @@ def run(
             path, shape = Path(paths[si]), shapes[si][0]
             correct = torch.zeros(npr, niou, dtype=torch.bool, device=device)  # init
             seen += 1
-            pred_over_threshold = pred[pred[:, 4] > 0.3]
-            print(pred[pred[:, 4] > 0.5])
-            print(pred[pred[:, 4] > 0.3])
-            print(pred[pred[:, 4] > 0.1])
-            n_boxes_regression.append((nl, pred_over_threshold.shape[0]))
+
+            n_boxes_regression.append((nl, npr))
             if npr == 0:
                 if nl:
                     stats.append((correct, *torch.zeros((3, 0), device=device)))
@@ -273,7 +270,6 @@ def run(
         mp, mr, map50, map = p.mean(), r.mean(), ap50.mean(), ap.mean()
         from sklearn.metrics import r2_score, mean_squared_error
         n_boxes_regression = np.array(n_boxes_regression)
-        print(n_boxes_regression)
         r2 = r2_score(n_boxes_regression[:, 0], n_boxes_regression[:, 1])
         mse = mean_squared_error(n_boxes_regression[:, 0], n_boxes_regression[:, 1])
         nt = np.bincount(stats[3].astype(int), minlength=nc)  # number of targets per class
