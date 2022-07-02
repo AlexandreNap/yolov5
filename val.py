@@ -226,7 +226,12 @@ def run(
             correct = torch.zeros(npr, niou, dtype=torch.bool, device=device)  # init
             seen += 1
 
-            n_boxes_regression.append((nl, npr))
+            n_boxes_regression.append((nl,  pred[pred[:, 4] > 0.25].shape[0]))
+            print(pred[pred[:, 4] > 0.25].shape[0])
+            print(pred[pred[:, 4] > 0.1].shape[0])
+            print(pred[pred[:, 4] > 0.02].shape[0])
+            print(pred[pred[:, 4] > 0.002].shape[0])
+
             if npr == 0:
                 if nl:
                     stats.append((correct, *torch.zeros((3, 0), device=device)))
