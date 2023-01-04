@@ -1,14 +1,16 @@
 # Install python
 FROM public.ecr.aws/lambda/python:3.9
 
-
+RUN ls
 # Install dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+
 #fix opencv error
-RUN pip install opencv-python-headless
+#RUN pip install opencv-python-headless
+RUN pip install opencv-contrib-python
 
 RUN pip install boto3
 RUN pip install 'pymongo[srv]'
