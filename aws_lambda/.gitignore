@@ -4,3 +4,5 @@ env.json
 *.pptx
 samconfig.toml
 .ipynb_checkpoints/
+cloud_utils.py
+SECRET_VARS.py

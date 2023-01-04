@@ -1,0 +1,24 @@
+# sam build -t template_predict_on_new.yaml
+# then sam deploy --guided
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    Timeout: 120
+    MemorySize: 5000
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+Resources:
+  # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  SurfersCountFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+    Metadata:
+      Dockerfile: aws_lambda/Dockerfile_predict_on_new
+      DockerContext: ../
+      DockerTag: python3.9-v1
