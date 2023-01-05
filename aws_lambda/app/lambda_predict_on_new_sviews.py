@@ -19,11 +19,11 @@ def load_image_from_s3(bucket, key):
         img_data = object.get().get('Body').read()
         img = Image.open(io.BytesIO(img_data))
         img.verify()  # verify that it is, in fact an image
-    except (IOError, SyntaxError) as e:
+        img = Image.open(io.BytesIO(img_data))
+        img = img.resize((1920, 1080))
+        return img
+    except (IOError, OSError, SyntaxError) as e:
         return None
-    img = Image.open(io.BytesIO(img_data))
-    img = img.resize((1920, 1080))
-    return img
 
 
 def get_sviews(col, bucket):
