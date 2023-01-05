@@ -33,7 +33,7 @@ def get_sviews(col, bucket):
     for x in col.find(query):
         db_list.append({"id": x["_id"],
                         "path": x["s3_path"]})
-    db_list = db_list[np.max((0, -7)):]
+    db_list = db_list[np.max((0, len(db_list) - 7)):]
 
     input_list = []
     for x in db_list:
