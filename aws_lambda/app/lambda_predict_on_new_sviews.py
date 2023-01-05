@@ -12,8 +12,7 @@ logger.setLevel(logging.INFO)
 
 
 def load_image_from_s3(bucket, key):
-    """
-    Load image file from s3.
+    """Load image file from s3.
     """
     object = bucket.Object(key)
     try:
